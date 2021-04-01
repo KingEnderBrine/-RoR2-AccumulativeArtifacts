@@ -1,21 +1,25 @@
 ﻿using BepInEx;
 using BepInEx.Configuration;
 using InLobbyConfig;
-using R2API.Utils;
+using MonoMod.RuntimeDetour.HookGen;
 using RoR2;
+using System;
+using System.Reflection;
 using System.Security;
 using System.Security.Permissions;
 
 [module: UnverifiableCode]
 [assembly: SecurityPermission(SecurityAction.RequestMinimum, SkipVerification = true)]
+[assembly: R2API.Utils.ManualNetworkRegistration]
+[assembly: EnigmaticThunder.Util.ManualNetworkRegistration]
 namespace AccumulativeArtifacts
 {
-    [NetworkCompatibility(CompatibilityLevel.NoNeedForSync)]
     [BepInDependency("com.KingEnderBrine.InLobbyConfig")]
-    [BepInDependency("com.bepis.r2api")]
-    [BepInPlugin("com.KingEnderBrine.AccumulativeArtifacts", "Accumulative Artifacts", "1.1.0")]
+    [BepInPlugin("com.KingEnderBrine.AccumulativeArtifacts", "Accumulative Artifacts", "1.2.0")]
     public class AccumulativeArtifactsPlugin : BaseUnityPlugin
     {
+        private static readonly MethodInfo onCurrentArtifactDiscovered = typeof(ArtifactTrialMissionController).GetMethod(nameof(ArtifactTrialMissionController.OnCurrentArtifactDiscovered), BindingFlags.NonPublic | BindingFlags.Instance);
+
         internal static AccumulativeArtifactsPlugin Instance { get; private set; }
         internal static ConfigEntry<bool> IsEnabled { get; set; }
         private ModConfigEntry ModConfig { get; set; }
@@ -32,8 +36,7 @@ namespace AccumulativeArtifacts
             };
 
             ModConfigCatalog.Add(ModConfig);
-
-            On.RoR2.ArtifactTrialMissionController.OnCurrentArtifactDiscovered += OnCurrentArtifactDiscovered;
+            HookEndpointManager.Add(onCurrentArtifactDiscovered, (Action<Action<ArtifactTrialMissionController, ArtifactDef>, ArtifactTrialMissionController, ArtifactDef>)OnCurrentArtifactDiscovered);
         }
 
         public void Destroy()
@@ -42,10 +45,10 @@ namespace AccumulativeArtifacts
 
             ModConfigCatalog.Remove(ModConfig);
 
-            On.RoR2.ArtifactTrialMissionController.OnCurrentArtifactDiscovered -= OnCurrentArtifactDiscovered;
+            HookEndpointManager.Remove(onCurrentArtifactDiscovered, (Action<Action<ArtifactTrialMissionController, ArtifactDef>, ArtifactTrialMissionController, ArtifactDef>)OnCurrentArtifactDiscovered);
         }
 
-        private static void OnCurrentArtifactDiscovered(On.RoR2.ArtifactTrialMissionController.orig_OnCurrentArtifactDiscovered orig, ArtifactTrialMissionController self, ArtifactDef artifactDef)
+        private static void OnCurrentArtifactDiscovered(Action<ArtifactTrialMissionController, ArtifactDef> orig, ArtifactTrialMissionController self, ArtifactDef artifactDef)
         {
             orig(self, artifactDef);
 
@@ -55,4 +58,16 @@ namespace AccumulativeArtifacts
             }
         }
     }
+}
+
+namespace R2API.Utils
+{
+    [AttributeUsage(AttributeTargets.Assembly)]
+    public class ManualNetworkRegistrationAttribute : Attribute { }
+}
+
+namespace EnigmaticThunder.Util
+{
+    [AttributeUsage(AttributeTargets.Assembly)]
+    public class ManualNetworkRegistrationAttribute : Attribute { }
 }

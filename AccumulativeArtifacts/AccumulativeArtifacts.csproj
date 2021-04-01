@@ -14,12 +14,6 @@
     <Reference Include="InLobbyConfig">
       <HintPath>..\..\CommonLibs\InLobbyConfig.dll</HintPath>
     </Reference>
-    <Reference Include="MMHOOK_Assembly-CSharp">
-      <HintPath>..\..\CommonLibs\MMHOOK_Assembly-CSharp.dll</HintPath>
-    </Reference>
-    <Reference Include="R2API">
-      <HintPath>..\..\CommonLibs\R2API.dll</HintPath>
-    </Reference>
     <Reference Include="UnityEngine">
       <HintPath>..\..\CommonLibs\UnityEngine.dll</HintPath>
     </Reference>
@@ -28,6 +22,9 @@
     </Reference>
     <Reference Include="UnityEngine.Networking">
       <HintPath>..\..\CommonLibs\UnityEngine.Networking.dll</HintPath>
+    </Reference>
+    <Reference Include="MonoMod.RuntimeDetour">
+      <HintPath>..\..\CommonLibs\MonoMod.RuntimeDetour.dll</HintPath>
     </Reference>
   </ItemGroup>
 
