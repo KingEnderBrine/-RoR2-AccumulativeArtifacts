@@ -1,6 +1,10 @@
 # Description
 Everytime you collect an artifact via trial in `Bulwark's Ambry`, it sticks throughout the run.
 # Changelog
+**1.3.0**
+
+* Fixes for `Survivors of the Void` update
+
 **1.2.0**
 
 * Removed r2api dependency
